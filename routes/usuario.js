@@ -5,7 +5,36 @@ const Usuario = require('../models/usuario');
 const app = express();
 
 app.get('/usuario', function (req, res) {
-    res.json('get Usuario local')
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
+    console.log(req.originalUrl);
+    let limite = req.query.limite || 5;
+    limite = Number(limite);
+
+    Usuario.find({estado:true},'nombre email role estado google')
+    .skip(desde)
+    .limit(5)
+    .exec((err, usuario) => {
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err 
+            });
+          }
+//console.log(req);
+    Usuario.count({estado:true},(err,conteo) => {
+        res.json({
+            ok:true,
+            usuario,
+            cuantos:conteo,
+        });
+        });
+
+    });
+
+    
+    
+    //res.json('get Usuario local')
   })
   
   app.post('/usuario', function (req, res) {
@@ -53,8 +82,35 @@ app.get('/usuario', function (req, res) {
      }) 
 
   })
-  app.delete('/usuario', function (req, res) {
-      res.json('delete Usuario')
+  app.delete('/usuario/:id', function (req, res) {
+     let id = req.params.id;
+
+//     Usuario.findByIdAndRemove(id, (err,usuarioBorrado) => {
+    let cambiaEstado = {
+        estado : false
+    }
+       Usuario.findByIdAndUpdate(id,cambiaEstado,{new:true} , (err,usuarioBorrado) => {
+    
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err 
+            });
+          }
+        if(!usuarioBorrado){
+            return res.status(400).json({
+                ok: false,
+                err : {
+                    message: 'usuario no encontrado'
+                } 
+            });
+        }
+        res.json({
+            ok:true,
+            usuario: usuarioBorrado
+        });
+     }) ;
+
   })
 
 
