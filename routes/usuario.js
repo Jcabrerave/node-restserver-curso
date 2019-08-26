@@ -13,7 +13,7 @@ app.get('/usuario', function (req, res) {
 
     Usuario.find({estado:true},'nombre email role estado google')
     .skip(desde)
-    .limit(5)
+    .limit(limite)
     .exec((err, usuario) => {
         if(err) {
             return res.status(400).json({
@@ -87,7 +87,7 @@ app.get('/usuario', function (req, res) {
 
 //     Usuario.findByIdAndRemove(id, (err,usuarioBorrado) => {
     let cambiaEstado = {
-        estado : false
+        estado : true
     }
        Usuario.findByIdAndUpdate(id,cambiaEstado,{new:true} , (err,usuarioBorrado) => {
     
@@ -115,3 +115,6 @@ app.get('/usuario', function (req, res) {
 
 
 module.exports = app;
+
+
+
